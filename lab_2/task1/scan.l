@@ -2,16 +2,17 @@
   #include <stdio.h>
   int yywrap(void);
   int yylex(void);
-  int column;
+  int colToPrint;
+  int currentCol;
 %}
-%s NAGLOWEK
-%s DANE
 %%
  /* == rules == */
-^[0-9] { sscanf(yytext,"%d",&column) }
-<0>^[a-zA-Z] { BEGING NAGLOWEK; }
-<NAGLOWEK>.$ { BEGIN DANE}
-<DANE>.
+^" "*[0-9] { sscanf(yytext, "%d", &colToPrint); }
+" " ;
+Kol[0-9][0-9] { currentCol++; if(currentCol == colToPrint){ ECHO; printf("\n"); } }
+[a-z0-9]+" " { currentCol++; if(currentCol == colToPrint){ ECHO; printf("\n"); } }
+" "" "+ { currentCol++; if(currentCol == colToPrint){ printf("\n"); } }
+\n { currentCol = 0; }
 
 %%
 int yywrap(void) { return 1; }
